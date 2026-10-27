@@ -8,6 +8,9 @@ export async function onRequest({request,env,params}){
  try{
   if(!env.DB)return json({error:'D1データベースが未設定です'},503);
   const url=new URL(request.url),route='/'+(params.path||[]).join('/');
+  if(['POST','PUT','DELETE'].includes(request.method)){
+   const origin=request.headers.get('origin');if(origin&&origin!==url.origin)return json({error:'Invalid origin'},403);
+  }
   if(request.method==='POST'){
    const origin=request.headers.get('origin');if(origin&&origin!==url.origin)return json({error:'Invalid origin'},403);
    if(!request.headers.get('content-type')?.includes('application/json'))return json({error:'JSON required'},415);
@@ -38,6 +41,34 @@ export async function onRequest({request,env,params}){
   }
   if(route==='/auth/logout'&&request.method==='POST'){let token=cookie(request,'folio_session');if(token)await env.DB.prepare('DELETE FROM sessions WHERE token_hash=?').bind(await digest(token)).run();return json({ok:true},200,{'set-cookie':sessionCookie('',0)})}
   let user=await getUser(request,env);if(!user)return json({error:'ログインしてください'},401);
+  if(route.startsWith('/photos/')&&['GET','PUT','DELETE'].includes(request.method)){
+   if(!env.PHOTOS)return json({error:'写真ストレージが未設定です'},503);
+   const id=route.slice('/photos/'.length);
+   if(!/^[a-zA-Z0-9_-]{1,100}$/.test(id))return json({error:'Invalid photo id'},400);
+   const project=await env.DB.prepare('SELECT id FROM projects WHERE user_id=? AND id=?').bind(user.id,id).first();
+   if(!project)return json({error:'作品が見つかりません'},404);
+   const key='users/'+user.id+'/projects/'+id+'/photo';
+   if(request.method==='GET'){
+    const obj=await env.PHOTOS.get(key);
+    if(!obj)return json({error:'写真が見つかりません'},404);
+    return new Response(obj.body,{headers:{'content-type':obj.httpMetadata?.contentType||'image/jpeg','cache-control':'private, no-store','x-content-type-options':'nosniff','content-disposition':'inline'}});
+   }
+   if(request.method==='DELETE'){await env.PHOTOS.delete(key);return json({ok:true})}
+   const mime=(request.headers.get('content-type')||'').split(';')[0].toLowerCase();
+   if(!['image/jpeg','image/png','image/webp','image/gif'].includes(mime))return json({error:'JPEG/PNG/WebP/GIFのみ対応しています'},415);
+   const len=Number(request.headers.get('content-length')||0);
+   if(len>10*1024*1024)return json({error:'写真は10MB以下にしてください'},413);
+   const blob=await request.arrayBuffer();
+   if(!blob.byteLength||blob.byteLength>10*1024*1024)return json({error:'写真は10MB以下にしてください'},413);
+   const bytes=new Uint8Array(blob);
+   const valid=(mime==='image/jpeg'&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255)
+    ||(mime==='image/png'&&bytes[0]===137&&bytes[1]===80&&bytes[2]===78&&bytes[3]===71)
+    ||(mime==='image/gif'&&bytes[0]===71&&bytes[1]===73&&bytes[2]===70&&bytes[3]===56)
+    ||(mime==='image/webp'&&String.fromCharCode(...bytes.slice(0,4))==='RIFF'&&String.fromCharCode(...bytes.slice(8,12))==='WEBP');
+   if(!valid)return json({error:'画像ファイルの形式を確認してください'},415);
+   await env.PHOTOS.put(key,blob,{httpMetadata:{contentType:mime}});
+   return json({ok:true});
+  }
   if(route==='/projects'&&request.method==='GET'){
    let rows=await env.DB.prepare('SELECT data FROM projects WHERE user_id=? ORDER BY updated_at DESC').bind(user.id).all();return json({projects:rows.results.map(r=>JSON.parse(r.data))});
   }
