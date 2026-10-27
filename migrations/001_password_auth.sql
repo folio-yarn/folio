@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS user_passwords (
 
 CREATE INDEX IF NOT EXISTS user_passwords_updated_at
 ON user_passwords(updated_at);
+
 -- Track failed password login attempts.
 
 CREATE TABLE IF NOT EXISTS auth_login_attempts (
