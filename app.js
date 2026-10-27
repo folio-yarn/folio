@@ -206,12 +206,15 @@ async function syncProjectPhotos(local){
  for(const p of s.projects){
   if(!accountUser)return;
   const matching=local.find(x=>x.id===p.id);
-  const existing=await idbGet('photos',photoKey(p.id)).catch(()=>null);
-  if(matching?.photo&&existing){
-   // A photo that exists on this device is retained locally. Uploading is safe to retry.
+  const existing=matching?.photo?await idbGet('photos',photoKey(p.id)).catch(()=>null):null;
+  // Prefer the server's existing photo to avoid overwriting a newer image from another device.
+  const cloudPhoto=await fetchPhotoFromCloud(p.id);
+  if(cloudPhoto){
+   if(p.photo?.startsWith('blob:'))URL.revokeObjectURL(p.photo);
+   p.photo=cloudPhoto;
+  }else if(existing){
+   p.photo=matching.photo;
    await pushPhotoToCloud(p.id,existing);
-  }else if(!p.photo){
-   p.photo=await fetchPhotoFromCloud(p.id);
   }
  }
  save();render();
