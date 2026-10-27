@@ -161,7 +161,7 @@ function turn(d){
 async function upload(ev){
  const f=ev.target.files?.[0];if(!f||!f.type.startsWith('image/'))return;
  const p=current();if(!p)return;
- try{await storePhoto(photoKey(p.id),f);if(p.photo?.startsWith('blob:'))URL.revokeObjectURL(p.photo);p.photo=URL.createObjectURL(f);save();render()}
+ try{await storePhoto(photoKey(p.id),f);if(p.photo?.startsWith('blob:'))URL.revokeObjectURL(p.photo);p.photo=URL.createObjectURL(f);save();render();if(accountUser)await pushPhotoToCloud(p.id,f)}
  catch(err){console.error(err);alert('写真の保存に失敗しました。端末の空き容量とブラウザ設定を確認してください。')}
 }
 async function uploadImage(ev,cb){
@@ -174,7 +174,7 @@ $('lang').onchange=ev=>{s.lang=ev.target.value;save();render()};
 
 // Account and cloud sync: email one-time code, HttpOnly session cookie, private per-user D1 rows.
 let accountUser=null, cloudEnabled=false,cloudTimers=new Map(),cloudBusy=false;
-const authI18n={"ja":{"login":"ログイン / 新規登録","entry":"ログイン / 登録","info":"メールに届く6桁の認証コードでログインできます。初回は自動的に登録されます。","email":"メールアドレス","send":"認証コードを送信","code":"6桁の認証コード（10分間有効）","verify":"ログインする","logout":"ログアウト","cloud":"作品の文字情報はアカウントに保存されます。写真のクラウド同期は準備中です。","privacy":"メールアドレスはログイン・アカウント管理に使用します。販促メールの送信には別途同意が必要です。","sending":"送信中…","sent":"認証コードをメールで送りました。","checking":"確認中…","loginNeeded":"作品の記録・アルバム作成にはログインが必要です。","editingNeeded":"作品を編集するにはログインしてください。"},"en":{"login":"Log in / Sign up","entry":"Log in / Sign up","info":"Sign in with a 6-digit code sent to your email. An account is created automatically the first time.","email":"Email address","send":"Send verification code","code":"6-digit verification code (valid for 10 minutes)","verify":"Log in","logout":"Log out","cloud":"Project details are saved to your account. Cloud photo syncing is coming soon.","privacy":"Your email is used for login and account management. Marketing emails require separate consent.","sending":"Sending…","sent":"We sent a verification code to your email.","checking":"Verifying…","loginNeeded":"Log in to record projects or create your album.","editingNeeded":"Log in to edit your project."},"ko":{"login":"로그인 / 회원가입","entry":"로그인 / 회원가입","info":"이메일로 받은 6자리 인증번호로 로그인하세요. 처음 이용하면 계정이 자동으로 생성됩니다.","email":"이메일 주소","send":"인증번호 보내기","code":"6자리 인증번호 (10분간 유효)","verify":"로그인","logout":"로그아웃","cloud":"작품의 텍스트 정보는 계정에 저장됩니다. 사진 클라우드 동기화는 준비 중입니다.","privacy":"이메일 주소는 로그인 및 계정 관리에 사용됩니다. 홍보 메일은 별도의 동의가 필요합니다.","sending":"전송 중…","sent":"이메일로 인증번호를 보냈습니다.","checking":"확인 중…","loginNeeded":"작품 기록 및 앨범 제작은 로그인이 필요합니다.","editingNeeded":"작품을 수정하려면 로그인하세요."}};
+const authI18n={"ja":{"login":"ログイン / 新規登録","entry":"ログイン / 登録","info":"メールに届く6桁の認証コードでログインできます。初回は自動的に登録されます。","email":"メールアドレス","send":"認証コードを送信","code":"6桁の認証コード（10分間有効）","verify":"ログインする","logout":"ログアウト","cloud":"作品の文字情報はアカウントに保存されます。写真はログイン後にクラウド同期されます。","privacy":"メールアドレスはログイン・アカウント管理に使用します。販促メールの送信には別途同意が必要です。","sending":"送信中…","sent":"認証コードをメールで送りました。","checking":"確認中…","loginNeeded":"作品の記録・アルバム作成にはログインが必要です。","editingNeeded":"作品を編集するにはログインしてください。"},"en":{"login":"Log in / Sign up","entry":"Log in / Sign up","info":"Sign in with a 6-digit code sent to your email. An account is created automatically the first time.","email":"Email address","send":"Send verification code","code":"6-digit verification code (valid for 10 minutes)","verify":"Log in","logout":"Log out","cloud":"Project details are saved to your account. Photos sync to the cloud after login.","privacy":"Your email is used for login and account management. Marketing emails require separate consent.","sending":"Sending…","sent":"We sent a verification code to your email.","checking":"Verifying…","loginNeeded":"Log in to record projects or create your album.","editingNeeded":"Log in to edit your project."},"ko":{"login":"로그인 / 회원가입","entry":"로그인 / 회원가입","info":"이메일로 받은 6자리 인증번호로 로그인하세요. 처음 이용하면 계정이 자동으로 생성됩니다.","email":"이메일 주소","send":"인증번호 보내기","code":"6자리 인증번호 (10분간 유효)","verify":"로그인","logout":"로그아웃","cloud":"작품의 텍스트 정보는 계정에 저장됩니다. 사진은 로그인 후 클라우드에 동기화됩니다.","privacy":"이메일 주소는 로그인 및 계정 관리에 사용됩니다. 홍보 메일은 별도의 동의가 필요합니다.","sending":"전송 중…","sent":"이메일로 인증번호를 보냈습니다.","checking":"확인 중…","loginNeeded":"작품 기록 및 앨범 제작은 로그인이 필요합니다.","editingNeeded":"작품을 수정하려면 로그인하세요."}};
 function at(key){return (authI18n[s.lang]||authI18n.ja)[key]||authI18n.ja[key]}
 function updateAccountButton(){let b=$('account-btn');if(b)b.textContent=accountUser?`◯ ${accountUser.email.split('@')[0]}`:at('entry')}
 function accountNotice(message){let el=$('auth-status');if(el)el.textContent=message}
@@ -183,10 +183,43 @@ function closeAccount(){let m=$('auth-modal');if(m)m.hidden=true;document.body.c
 async function api(path,opts={}){let r=await fetch('/api'+path,{credentials:'same-origin',...opts});let data=await r.json().catch(()=>({error:'応答を読み取れません'}));if(!r.ok)throw new Error(data.error||'通信エラー');return data}
 async function requestCode(ev){ev.preventDefault();accountNotice(at('sending'));try{let email=$('auth-email').value.trim();await api('/auth/request',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email})});$('verify-form').hidden=false;accountNotice(at('sent'))}catch(err){accountNotice(err.message)}}
 async function verifyCode(ev){ev.preventDefault();accountNotice(at('checking'));try{let email=$('auth-email').value.trim(),code=$('auth-code').value;let result=await api('/auth/verify',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,code})});accountUser=result.user;closeAccount();await loadCloudProjects(true)}catch(err){accountNotice(err.message)}}
+async function pushPhotoToCloud(id,blob){
+ if(!accountUser||!cloudEnabled)return;
+ const p=s.projects.find(x=>x.id===id);if(!p)return;
+ try{
+  await api('/projects',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({project:{...p,photo:null}})});
+  const response=await fetch('/api/photos/'+encodeURIComponent(id),{method:'PUT',credentials:'same-origin',headers:{'content-type':blob.type},body:blob});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok)throw Error(result.error||'Photo upload failed');
+  const st=$('save-state');if(st)st.textContent='✓ 写真もクラウドに保存済み';
+ }catch(err){console.error('Photo sync failed',err);const st=$('save-state');if(st)st.textContent='⚠ 写真はこの端末のみ（クラウド同期失敗）';alert('写真はこの端末に保存されていますが、クラウドへのアップロードに失敗しました。通信環境をご確認ください。')}
+}
+async function fetchPhotoFromCloud(id){
+ try{
+  const response=await fetch('/api/photos/'+encodeURIComponent(id),{credentials:'same-origin'});
+  if(response.status===404)return null;
+  if(!response.ok)throw Error('Photo download failed');
+  const blob=await response.blob();await storePhoto(photoKey(id),blob);return URL.createObjectURL(blob);
+ }catch(err){console.error('Photo download failed',err);return null}
+}
+async function syncProjectPhotos(local){
+ for(const p of s.projects){
+  if(!accountUser)return;
+  const matching=local.find(x=>x.id===p.id);
+  const existing=await idbGet('photos',photoKey(p.id)).catch(()=>null);
+  if(matching?.photo&&existing){
+   // A photo that exists on this device is retained locally. Uploading is safe to retry.
+   await pushPhotoToCloud(p.id,existing);
+  }else if(!p.photo){
+   p.photo=await fetchPhotoFromCloud(p.id);
+  }
+ }
+ save();render();
+}
 async function loadCloudProjects(afterLogin=false){try{let result=await api('/projects');let remote=result.projects||[];let local=s.projects||[];cloudEnabled=true;
  if(local.length){let importLocal=confirm(`このブラウザに作品が${local.length}件あります。ログインしたアカウントに取り込みますか？
 「キャンセル」ではクラウド上の作品だけを表示します。`);if(importLocal){for(let p of local){if(!remote.some(x=>x.id===p.id)){await api('/projects',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({project:{...p,photo:null}})});remote.push(p)}}}}
- s.projects=remote.map(p=>{let localMatch=local.find(l=>l.id===p.id);return {...p,photo:localMatch?.photo||null}});s.active=null;s.selected=[];s.view='studio';save();render();
+ s.projects=remote.map(p=>{let localMatch=local.find(l=>l.id===p.id);return {...p,photo:localMatch?.photo||null}});s.active=null;s.selected=[];s.view='studio';save();render();await syncProjectPhotos(local);
  }catch(err){cloudEnabled=false;alert('クラウドデータの取得に失敗しました: '+err.message)}}
 async function logoutAccount(){if(!confirm('ログアウトしますか？ この端末にはログイン中の作品を残しません。'))return;try{await api('/auth/logout',{method:'POST',headers:{'content-type':'application/json'},body:'{}'})}catch{}accountUser=null;cloudEnabled=false;cloudTimers.forEach(clearTimeout);cloudTimers.clear();s.projects=[];s.active=null;s.selected=[];s.coverPhoto=null;save();closeAccount();go('home')}
 function queueCloudSave(){if(!cloudEnabled||!accountUser)return;for(let p of s.projects){clearTimeout(cloudTimers.get(p.id));let snapshot=structuredClone(p);snapshot.photo=null; cloudTimers.set(p.id,setTimeout(async()=>{try{await api('/projects',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({project:snapshot})});let st=$('save-state');if(st)st.textContent='✓ クラウドに保存済み'}catch(err){let st=$('save-state');if(st)st.textContent='⚠ クラウド保存に失敗（この端末には保存済み）';console.error('FOLIO cloud save:',err)}},550))}}
