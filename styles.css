@@ -255,3 +255,7 @@ body.dialog-open{overflow:hidden}
 .studio-add-plus{font-size:52px;font-weight:300;line-height:1}
 .studio-add-label{font-size:14px;font-weight:700;letter-spacing:.06em}
 @media(min-width:900px){.studio-add-card{min-height:0;aspect-ratio:unset;align-self:stretch}}
+
+/* Beginner template photography: portrait 4:5, full image visible. */
+.showcase .carousel-photo{height:auto!important;aspect-ratio:4/5!important;overflow:hidden;background:#f2eae0}
+.showcase .carousel-photo img{display:block;width:100%;height:100%;object-fit:contain!important;object-position:center!important}
