@@ -9,13 +9,22 @@ const normalizedEmail=email=>String(email||'').trim().toLowerCase();
 const passwordValid=p=>typeof p==='string'&&p.length>=12&&p.length<=128;
 const bytesToHex=bytes=>Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
 const hexToBytes=hex=>new Uint8Array(hex.match(/.{2}/g).map(x=>parseInt(x,16)));
-const derivePassword=async(password,salt,iterations=310000)=>{
- const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveBits']);
- return bytesToHex(new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations},key,256)));
+// Cloudflare Workers WebCrypto limits each PBKDF2 invocation to 100,000 iterations.
+// Three sequential rounds preserve a high work factor without exceeding that limit.
+const PASSWORD_ROUNDS=3;
+const PASSWORD_ITERATIONS=100000;
+const derivePassword=async(password,salt)=>{
+ let material=new TextEncoder().encode(password);
+ for(let round=0;round<PASSWORD_ROUNDS;round++){
+  const key=await crypto.subtle.importKey('raw',material,'PBKDF2',false,['deriveBits']);
+  material=new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations:PASSWORD_ITERATIONS},key,256));
+ }
+ return bytesToHex(material);
 };
-const hashPassword=async password=>{const salt=crypto.getRandomValues(new Uint8Array(16));return 'pbkdf2_sha256$310000$'+bytesToHex(salt)+'$'+await derivePassword(password,salt)};
+const hashPassword=async password=>{const salt=crypto.getRandomValues(new Uint8Array(16));return 'pbkdf2_sha256_chain3$100000$'+bytesToHex(salt)+'$'+await derivePassword(password,salt)};
 const checkPassword=async(password,stored)=>{
- const parts=String(stored||'').split('$');if(parts.length!==4||parts[0]!=='pbkdf2_sha256'||parts[1]!=='310000'||!/^[a-f0-9]{32}$/.test(parts[2])||!/^[a-f0-9]{64}$/.test(parts[3]))return false;
+ const parts=String(stored||'').split('$');
+ if(parts.length!==4||parts[0]!=='pbkdf2_sha256_chain3'||parts[1]!=='100000'||!/^[a-f0-9]{32}$/.test(parts[2])||!/^[a-f0-9]{64}$/.test(parts[3]))return false;
  const computed=hexToBytes(await derivePassword(password,hexToBytes(parts[2]))),expected=hexToBytes(parts[3]);let diff=0;for(let i=0;i<computed.length;i++)diff|=computed[i]^expected[i];return diff===0;
 };
 const makeSession=async(env,user)=>{const token=random();await env.DB.prepare('INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)').bind(await digest(token),user.id,Date.now()+30*86400000).run();return json({user},200,{'set-cookie':sessionCookie(token,30*86400)})};
