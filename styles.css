@@ -259,3 +259,13 @@ body.dialog-open{overflow:hidden}
 /* Beginner template photography: portrait 4:5, full image visible. */
 .showcase .carousel-photo{height:auto!important;aspect-ratio:4/5!important;overflow:hidden;background:#f2eae0}
 .showcase .carousel-photo img{display:block;width:100%;height:100%;object-fit:contain!important;object-position:center!important}
+
+/* FOLIO account modal: original editorial serif wordmark and quiet pink links. */
+.auth-panel .auth-brand{font-family:'Playfair Display',Georgia,serif;font-size:clamp(42px,8vw,68px);font-weight:900;letter-spacing:-.055em;line-height:1.1;text-align:center;color:#f6bdc8;margin:12px 0 22px}
+.auth-panel .auth-heading{text-align:center;font-size:20px;margin:0 0 14px}
+.auth-panel .auth-links{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:22px}
+.auth-panel .auth-links button{appearance:none;background:none;border:0;color:#e87e9e;font-size:15px;font-weight:700;cursor:pointer;padding:7px 12px}
+.auth-panel .auth-links button:hover{text-decoration:underline}
+.auth-panel .auth-links button:focus-visible{outline:2px solid #e87e9e;outline-offset:3px}
+/* View All stays a live studio navigation control. */
+.textbtn:has(.view-image)::after{content:'→';color:#f6bdc8;font-size:26px;vertical-align:middle;margin-left:9px}
