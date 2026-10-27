@@ -66,10 +66,10 @@ function templateArt(type){
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(start+(type==='tote'?tote:scrunchie)+end)
 }
 const showcase=[
- {src:'assets/beanie-cream.svg',label:'DOUBLE CROCHET BEANIE',kind:'BEGINNER / TEMPLATE'},
- {src:templateArt('tote'),label:'CROCHET TOTE BAG',kind:'BEGINNER / TEMPLATE'},
- {src:'assets/beanie-navy.svg',label:'SINGLE CROCHET BEANIE',kind:'BEGINNER / TEMPLATE'},
- {src:templateArt('scrunchie'),label:'CROCHET SCRUNCHIE',kind:'BEGINNER / TEMPLATE'}
+ {src:'assets/beanie-double.jpg',label:'DOUBLE CROCHET BEANIE',kind:'BEGINNER / TEMPLATE'},
+ {src:'assets/tote-double.jpg',label:'CROCHET TOTE BAG',kind:'BEGINNER / TEMPLATE'},
+ {src:'assets/beanie-single.jpg',label:'SINGLE CROCHET BEANIE',kind:'BEGINNER / TEMPLATE'},
+ {src:'assets/scrunchie-double.jpg',label:'CROCHET SCRUNCHIE',kind:'BEGINNER / TEMPLATE'}
 ];
 const templateI18n={
  ja:{subtitles:['長編みのビーニー','長編みのトートバッグ','細編みのビーニー','かぎ針編みのシュシュ'],intro:'初心者向けの作り方の目安です。画像はイメージです。サイズや目数は毛糸とゲージによって変わります。',start:'この作品を参考に記録を始める',guide:'編み方ガイド',head:'はじめてのかぎ針編み',foot:'4つの初心者向けテンプレート。画像をタップして編み方をチェック。',steps:[
