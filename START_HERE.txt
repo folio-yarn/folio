@@ -1,0 +1,6 @@
+FOLIO. v18
+1. index.html を Chrome で開いてください。
+2. 保存済みデータは消さないでください。
+3. file:// での IndexedDB 保存が動かない場合は、ターミナルでこのフォルダに移動して python3 -m http.server 8000 を実行し、http://localhost:8000 で開いてください。
+※ file:// と localhost は別の保存領域です。既存データの引き継ぎ確認前に元のブラウザデータを消さないでください。
+※ クラウド認証は Cloudflare 設定後に動作します。
