@@ -247,3 +247,11 @@ body.dialog-open{overflow:hidden}
  .carousel-dots{display:flex!important}
 }
 @media(min-width:900px) and (max-width:1140px){.carousel-card{flex-basis:52vw!important;width:52vw!important}}
+
+/* Studio: project creation is a card in the collection grid */
+.studio-add-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:210px;border:2px dashed #d5e2e3;background:#e8efee;color:#294c60;text-align:center;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s,border-color .2s,transform .2s}
+.studio-add-card:hover{background:#f3f6f4;border-color:#7398a5;transform:translateY(-2px)}
+.studio-add-card:focus-visible{outline:3px solid #f6b8c5;outline-offset:3px}
+.studio-add-plus{font-size:52px;font-weight:300;line-height:1}
+.studio-add-label{font-size:14px;font-weight:700;letter-spacing:.06em}
+@media(min-width:900px){.studio-add-card{min-height:0;aspect-ratio:unset;align-self:stretch}}
