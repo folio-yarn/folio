@@ -58,11 +58,18 @@ function go(v){if(['new','record','book','choose','preview'].includes(v)&&!accou
 function header(){document.documentElement.lang=s.lang;$('lang').value=s.lang;let nav=$('nav');nav.innerHTML=[['home','⌂'],['studio','▦']].map(([v,ic])=>`<button class="${s.view===v||(v==='home'&&['new','record'].includes(s.view))||(v==='studio'&&['book','choose','preview'].includes(s.view))?'active':''}" onclick="go('${v}')"><span>${ic}</span>${t(v)}</button>`).join('')}
 function ad(){return `<div class="ad">${t('ad')}</div>`}
 function tile(p){return `<article class="card" onclick="openProject('${p.id}')"><div class="thumb">${p.photo?`<img src="${p.photo}" alt="">`:'✳'}</div><h4>${e(p.name)}</h4><p>${p.rows.length} ROWS · ${p.finished?'完成':'制作中'}</p></article>`}
+function templateArt(type){
+ const start='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 540"><rect width="480" height="540" fill="#d4dcd5"/>';
+ const end='<text x="24" y="505" font-family="Georgia,serif" font-size="19" letter-spacing="3" fill="#355a6c">FOLIO. / CROCHET</text></svg>';
+ const tote='<path d="M150 188 C150 68 330 68 330 188" fill="none" stroke="#567d89" stroke-width="28"/><path d="M99 189 L381 189 L360 448 L120 448 Z" fill="#89a9aa" stroke="#567d89" stroke-width="9"/><path d="M123 232 H356 M119 266 H359 M116 300 H362 M113 334 H365 M110 368 H368 M107 402 H371" stroke="#c8d9d4" stroke-width="5" opacity=".85"/>';
+ const scrunchie='<circle cx="240" cy="270" r="129" fill="#d1a3b1" stroke="#b77891" stroke-width="12"/><circle cx="240" cy="270" r="54" fill="#d4dcd5" stroke="#b77891" stroke-width="12"/><g stroke="#f2c8d0" stroke-width="8" fill="none"><path d="M240 146 Q310 178 348 240 Q315 315 260 381 Q190 354 141 292 Q162 214 240 146Z"/><path d="M163 186 Q220 210 240 214 Q310 219 323 289 Q278 340 204 338 Q154 290 163 186Z"/></g>';
+ return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(start+(type==='tote'?tote:scrunchie)+end)
+}
 const showcase=[
  {src:'assets/beanie-cream.svg',label:'DOUBLE CROCHET BEANIE',kind:'BEGINNER / TEMPLATE'},
- {src:'assets/beanie-olive.svg',label:'CROCHET TOTE BAG',kind:'BEGINNER / TEMPLATE'},
+ {src:templateArt('tote'),label:'CROCHET TOTE BAG',kind:'BEGINNER / TEMPLATE'},
  {src:'assets/beanie-navy.svg',label:'SINGLE CROCHET BEANIE',kind:'BEGINNER / TEMPLATE'},
- {src:'assets/beanie-rose.svg',label:'CROCHET SCRUNCHIE',kind:'BEGINNER / TEMPLATE'}
+ {src:templateArt('scrunchie'),label:'CROCHET SCRUNCHIE',kind:'BEGINNER / TEMPLATE'}
 ];
 const templateI18n={
  ja:{subtitles:['長編みのビーニー','長編みのトートバッグ','細編みのビーニー','かぎ針編みのシュシュ'],intro:'初心者向けの作り方の目安です。画像はイメージです。サイズや目数は毛糸とゲージによって変わります。',start:'この作品を参考に記録を始める',guide:'編み方ガイド',head:'はじめてのかぎ針編み',foot:'4つの初心者向けテンプレート。画像をタップして編み方をチェック。',steps:[
