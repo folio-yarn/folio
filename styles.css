@@ -269,3 +269,14 @@ body.dialog-open{overflow:hidden}
 .auth-panel .auth-links button:focus-visible{outline:2px solid #e87e9e;outline-offset:3px}
 /* View All stays a live studio navigation control. */
 .textbtn:has(.view-image)::after{content:'→';color:#f6bdc8;font-size:26px;vertical-align:middle;margin-left:9px}
+
+/* Magazine spread: two portrait 4:5 pages, not a full-width banner. */
+.book-stage.open-book{width:min(100%,920px);margin:22px auto 25px}
+.open-book .editorial-spread{width:100%;min-height:0;aspect-ratio:8/5;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.open-book .editorial-spread>.spread-left,.open-book .editorial-spread>.spread-right{min-height:0;min-width:0}
+.book-stage.single-book{width:min(100%,920px);margin-left:auto;margin-right:auto}
+/* Notebook edition selector and cover heading. */
+.edition-card strong{font-size:clamp(16px,2.2vw,20px);letter-spacing:1.3px}
+.edition-card small{font-size:clamp(11px,1.5vw,13px)}
+.cover-section-heading{text-align:center}
+.cover-section-heading h3{text-align:center}
