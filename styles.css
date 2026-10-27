@@ -280,3 +280,8 @@ body.dialog-open{overflow:hidden}
 .edition-card small{font-size:clamp(11px,1.5vw,13px)}
 .cover-section-heading{text-align:center}
 .cover-section-heading h3{text-align:center}
+
+/* Keep cover and interior pages at the same physical preview size.
+   A spread is 920px wide, so each 4:5 page is 460px wide. */
+.book-stage.single-book .single-page{width:50%;max-width:none;flex:0 0 50%;aspect-ratio:4/5}
+@media(max-width:600px){.book-stage.single-book .single-page{width:50%;flex-basis:50%}}
