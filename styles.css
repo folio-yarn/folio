@@ -224,3 +224,16 @@ body.dialog-open{overflow:hidden}
 @media(min-width:900px){
  #auth-modal>.auth-panel,#recipe-modal>.auth-panel{width:min(440px,calc(100vw - 40px))!important}
 }
+
+/* Desktop editorial carousel: three cards visible, fourth enters as slides advance. */
+@media(min-width:900px){
+ .carousel-window{overflow:hidden!important;width:100%!important}
+ .carousel-track{display:flex!important;grid-template-columns:none!important;gap:22px!important;width:max-content!important;transition:transform .72s cubic-bezier(.22,.8,.22,1)!important}
+ .carousel-card{flex:0 0 calc((min(100vw - 160px, 1400px) - 44px)/3)!important;width:calc((min(100vw - 160px, 1400px) - 44px)/3)!important;transform:scale(.96)!important;opacity:.78!important;transition:transform .72s,opacity .72s!important}
+ .carousel-card.is-active{transform:scale(1)!important;opacity:1!important}
+ .carousel-dots{display:flex!important}
+ .carousel-bottom{justify-content:center}
+}
+@media(min-width:900px) and (max-width:1140px){
+ .carousel-card{flex-basis:calc((100vw - 130px)/2)!important;width:calc((100vw - 130px)/2)!important}
+}
