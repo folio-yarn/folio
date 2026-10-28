@@ -345,3 +345,7 @@ body.dialog-open{overflow:hidden}
 .choose-all-btn:focus-visible{outline:3px solid #253d6e;outline-offset:3px}
 .folio-editorial-v2 .folio-cutout .folio-auto-cutout{object-fit:contain;mix-blend-mode:normal}
 @media(max-width:470px){.choose-selection-head{gap:8px}.choose-all-btn{font-size:12px;padding:9px 12px}}
+
+/* Cutout loading / failure indicator, without changing the original photo. */
+.folio-editorial-v2 .folio-cutout.cutout-loading:after{content:'背景を処理中…';position:absolute;inset:auto 0 0;background:#ffffffdf;color:#253d6e;font:600 10px/1.4 'DM Sans',sans-serif;text-align:center;padding:5px 2px}
+.folio-editorial-v2 .folio-cutout.cutout-failed:after{content:'背景透過を利用できません';position:absolute;inset:auto 0 0;background:#ffffffeb;color:#253d6e;font:600 9px/1.4 'DM Sans',sans-serif;text-align:center;padding:5px 2px}
