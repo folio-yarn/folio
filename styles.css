@@ -310,3 +310,14 @@ body.dialog-open{overflow:hidden}
 .folio-editorial-v2 .folio-page-footer-right span:first-child{font-size:clamp(7px,.95vw,10px)}
 .folio-editorial-v2 .folio-page-footer-right span:last-child{font-size:clamp(9px,1.3vw,15px)}
 @media(max-width:600px){.open-book .folio-editorial-v2>.spread-left,.open-book .folio-editorial-v2>.spread-right{padding:8px}.folio-editorial-v2 .product-heading{font-size:clamp(15px,4.5vw,25px)}.folio-editorial-v2 .recipe-heading{font-size:clamp(15px,3.7vw,24px);margin-bottom:6px}.folio-editorial-v2 .folio-material-copy{font-size:8px}.folio-editorial-v2 .folio-material-copy p{margin-bottom:3px}.folio-editorial-v2 .recipe-rows{font-size:8px;line-height:1.35}.folio-editorial-v2 .recipe-rows p{margin-bottom:3px}.folio-editorial-v2 .folio-recipe{padding-top:7px}.folio-editorial-v2 .folio-page-footer{padding-top:5px}}
+
+/* v41 — POPEYE-inspired magazine typography and densely set, unaltered row notes */
+.folio-editorial-v2 .folio-materials{min-height:32%}
+.folio-editorial-v2 .folio-recipe{padding-top:12px;border-top:1px solid #253d6e;overflow:hidden}
+.folio-editorial-v2 .folio-recipe-heading{display:flex;align-items:end;justify-content:space-between;gap:8px;margin-bottom:13px}
+.folio-editorial-v2 .folio-recipe-heading .recipe-heading{font-size:clamp(17px,2.6vw,34px);margin:0}
+.folio-editorial-v2 .folio-recipe-heading>span{font:700 clamp(6px,.85vw,10px)/1.2 'DM Sans',sans-serif;letter-spacing:.08em;text-align:right}
+.folio-editorial-v2 .recipe-rows{columns:2;column-gap:clamp(8px,1.7vw,20px);column-rule:1px solid #e0e2e6;font-size:clamp(8px,1.1vw,12px);line-height:1.55}
+.folio-editorial-v2 .recipe-rows p{break-inside:avoid;margin:0 0 9px}
+.folio-editorial-v2 .recipe-rows b{display:block;font-weight:700;margin-bottom:2px}
+@media(max-width:600px){.folio-editorial-v2 .folio-materials{min-height:35%}.folio-editorial-v2 .folio-recipe-heading{margin-bottom:5px}.folio-editorial-v2 .folio-recipe-heading .recipe-heading{font-size:clamp(12px,3vw,19px)}.folio-editorial-v2 .recipe-rows{font-size:7px;column-gap:6px;line-height:1.3}.folio-editorial-v2 .recipe-rows p{margin-bottom:4px}}
