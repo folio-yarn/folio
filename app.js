@@ -178,8 +178,32 @@ function chooseRecipePreview(chosen){
  try{s.selected=[id];s.page=1;return magazineSpread()}
  finally{s.selected=previousSelected;s.page=previousPage}
 }
-async function uploadRecipePhoto(ev,id){const file=ev.target.files?.[0];if(!file)return;if(!['image/png','image/jpeg','image/webp'].includes(file.type)){alert('PNG・JPG・WebP画像を選んでください。');return;}const p=s.projects.find(x=>x.id===id);if(!p)return;try{await storePhoto(recipePhotoKey(id),file);if(p.recipePhoto?.startsWith('blob:'))URL.revokeObjectURL(p.recipePhoto);p.recipePhoto=URL.createObjectURL(file);choosePreviewId=id;save();render()}catch(error){console.error(error);alert('画像を保存できませんでした。')}}
-async function removeRecipePhoto(id){const p=s.projects.find(x=>x.id===id);if(!p)return;try{await idbPut('photos',recipePhotoKey(id),null);if(p.recipePhoto?.startsWith('blob:'))URL.revokeObjectURL(p.recipePhoto);p.recipePhoto=null;save();render()}catch(error){console.error(error);alert('画像を削除できませんでした。')}}
+async function syncRecipeImage(id,blob,method='PUT'){
+ if(!accountUser||!cloudEnabled)return;
+ const response=await fetch('/api/photos/'+encodeURIComponent(id)+'/recipe',{method,credentials:'same-origin',headers:method==='PUT'?{'content-type':blob.type}:{},body:method==='PUT'?blob:undefined});
+ if(!response.ok){const info=await response.json().catch(()=>({}));throw Error(info.error||'レシピ画像のクラウド同期に失敗しました')}
+}
+async function uploadRecipePhoto(ev,id){
+ const file=ev.target.files?.[0];if(!file)return;
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type)){alert('PNG・JPG・WebP画像を選んでください。');return}
+ if(file.size>10*1024*1024){alert('画像は10MB以下にしてください。画質を落とさず保存するため、元画像を別途保管してください。');return}
+ const p=s.projects.find(x=>x.id===id);if(!p)return;
+ try{
+  await storePhoto(recipePhotoKey(id),file);
+  if(p.recipePhoto?.startsWith('blob:'))URL.revokeObjectURL(p.recipePhoto);
+  p.recipePhoto=URL.createObjectURL(file);choosePreviewId=id;save();render();
+  if(accountUser&&cloudEnabled)await syncRecipeImage(id,file);
+ }catch(error){console.error(error);alert('端末には保存しましたが、クラウドへのレシピ画像同期に失敗しました。元画像を消さず、通信状況を確認してください。')}
+}
+async function removeRecipePhoto(id){
+ const p=s.projects.find(x=>x.id===id);if(!p)return;
+ try{
+  if(accountUser&&cloudEnabled)await syncRecipeImage(id,null,'DELETE');
+  await idbPut('photos',recipePhotoKey(id),null);
+  if(p.recipePhoto?.startsWith('blob:'))URL.revokeObjectURL(p.recipePhoto);
+  p.recipePhoto=null;save();render();
+ }catch(error){console.error(error);alert('レシピ画像の削除に失敗しました。')}
+}
 function makePages(){let ps=s.selected.map(id=>s.projects.find(p=>p.id===id)).filter(Boolean).slice(0,s.edition);return [{kind:'cover'},...ps.map((p,i)=>({kind:'project',p,i})),{kind:'end'}]}
 function photo(p){return p.photo?`<img class="preview-photo" src="${p.photo}" alt="">`:`<div class="preview-placeholder">✳</div>`}
 function magazineSpread(){let pages=makePages(),page=pages[Math.min(s.page,pages.length-1)]||pages[0],isCover=page.kind==='cover',isEnd=page.kind==='end',p=page.p;let cover={yellow:'cover-yellow.jpg',navy:'cover-navy.jpg',white:'cover-white-blank.jpg',blue:'cover-blue-blank.jpg',sky:'sky-cover.jpg',olive:'olive-cover.jpg'}[s.design]||'cover-yellow.jpg';let back={yellow:'back-yellow.jpg',navy:'back-navy.jpg',white:'back-white.jpg',blue:'back-blue.jpg',sky:'sky-back.jpg',olive:'olive-back.jpg'}[s.design]||'back-yellow.jpg';let yarns=p?(p.yarns?.length?p.yarns.map(y=>`${e(y.name)} ${e(y.shade)} ${e(y.amount)}`).join(' / '):e(p.yarn)):' ';
@@ -319,6 +343,22 @@ async function syncProjectPhotos(local){
   const matching=local.find(x=>x.id===p.id);
   const existing=matching?.photo?await idbGet('photos',photoKey(p.id)).catch(()=>null):null;
   // Prefer the server's existing photo to avoid overwriting a newer image from another device.
+  // Restore full-resolution recipe source from private R2; migrate old device-only images.
+  try{
+   const rr=await fetch('/api/photos/'+encodeURIComponent(p.id)+'/recipe',{credentials:'same-origin'});
+   if(rr.ok){
+    const original=await rr.blob();
+    await storePhoto(recipePhotoKey(p.id),original);
+    if(p.recipePhoto?.startsWith('blob:'))URL.revokeObjectURL(p.recipePhoto);
+    p.recipePhoto=URL.createObjectURL(original);
+   }else if(rr.status===404){
+    const localRecipe=await idbGet('photos',recipePhotoKey(p.id)).catch(()=>null);
+    if(localRecipe&&localRecipe.size){
+     await syncRecipeImage(p.id,localRecipe);
+     p.recipePhoto=URL.createObjectURL(localRecipe);
+    }
+   }else{throw Error('Recipe image download failed: '+rr.status)}
+  }catch(err){console.warn('Recipe photo sync:',err)}
   const cloudPhoto=await fetchPhotoFromCloud(p.id);
   if(cloudPhoto){
    if(p.photo?.startsWith('blob:'))URL.revokeObjectURL(p.photo);
