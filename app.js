@@ -150,7 +150,30 @@ function addRow(){let p=current(),f=new FormData($('rowform'));p.rows.push({coun
 function undo(){let p=current();if(p.rows.length){p.rows.pop();save();render()}}
 function removeRow(i){current().rows.splice(i,1);save();render()}
 function setEdition(n){s.edition=n;s.selected=s.selected.slice(0,n);save();render()}
-function setDesign(v){s.design=v;save();render()}
+let coverRenderTimer=null;
+function setDesign(v){
+ if(!coverChoices.some(x=>x[0]===v))return;
+ s.design=v;save();
+ const track=document.getElementById('cover-carousel-track');
+ if(!track){render();return}
+ const active=coverChoices.findIndex(x=>x[0]===v);
+ track.querySelectorAll('.cover-carousel-card').forEach((card,i)=>{
+  const offset=i-active, square=offset*offset;
+  card.style.setProperty('--shift',offset*55+'%');
+  card.style.setProperty('--depth',-square*55+'px');
+  card.style.setProperty('--tilt',offset*-13+'deg');
+  card.style.setProperty('--scale',Math.max(.65,1-.11*square));
+  card.style.setProperty('--fade',Math.max(.2,1-.23*square));
+  card.style.zIndex=10-square;
+  card.classList.toggle('is-active',i===active);
+  card.setAttribute('aria-pressed',String(i===active));
+ });
+ const caption=document.querySelector('.cover-carousel-caption');
+ if(caption)caption.innerHTML='<strong>'+coverChoices[active][2]+'</strong><span>SWIPE TO EXPLORE · '+(active+1)+' / '+coverChoices.length+'</span>';
+ document.querySelectorAll('.cover-carousel-dots button').forEach((dot,i)=>dot.classList.toggle('active',i===active));
+ clearTimeout(coverRenderTimer);
+ coverRenderTimer=setTimeout(()=>{if(s.view==='book')render()},900);
+}
 function selectAllProjects(){const available=s.projects.slice(0,s.edition).map(p=>p.id);const all=available.length===s.selected.length&&available.every(id=>s.selected.includes(id));s.selected=all?[]:available;save();render()}
 function toggle(id,on){if(on&&s.selected.length>=s.edition){alert(`${s.edition} max`);render();return}s.selected=on?[...s.selected,id]:s.selected.filter(x=>x!==id);save();render()}
 function startPreview(){if(s.selected.length!==s.edition)return;s.page=0;go('preview')}
