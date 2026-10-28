@@ -384,3 +384,19 @@ body.dialog-open{overflow:hidden}
 .recipe-upload-button{min-width:118px;text-align:center}
 .recipe-local-note{margin-top:13px!important}
 @media(max-width:470px){.recipe-upload-item{gap:7px}.recipe-item-thumb{width:36px;height:36px;flex-basis:36px}.recipe-image-thumb{width:34px;height:34px;flex-basis:34px}.recipe-upload-button{min-width:95px;font-size:10px;padding:10px 7px}.recipe-preview-pick{gap:6px}.recipe-sample-title{font-size:9px}}
+
+/* Cover selection: layered, swipeable 3D carousel */
+.cover-carousel{position:relative;height:clamp(290px,77vw,490px);max-width:680px;margin:10px auto 0;display:flex;align-items:center;justify-content:center;isolation:isolate;overflow:hidden;perspective:1100px}
+.cover-carousel-track{position:relative;width:100%;height:100%;touch-action:pan-y;transform-style:preserve-3d}
+.cover-carousel-card{position:absolute;left:50%;top:50%;width:clamp(138px,44%,240px);aspect-ratio:4/5;transform:translate(-50%,-50%) translateX(calc(var(--offset)*55%)) translateZ(calc(-1px * var(--offset)*var(--offset)*55)) rotateY(calc(var(--offset)*-13deg)) scale(calc(1 - .11*var(--offset)*var(--offset)));opacity:clamp(.15,calc(1 - .23*var(--offset)*var(--offset)),1);z-index:calc(10 - var(--offset)*var(--offset));padding:0;border:0;background:#fff;box-shadow:0 18px 35px #13284038;cursor:pointer;transition:transform .55s cubic-bezier(.22,.75,.18,1),opacity .55s ease,box-shadow .55s ease;overflow:hidden;backface-visibility:hidden}
+.cover-carousel-card img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.cover-carousel-card.is-active{box-shadow:0 23px 45px #13284040}
+.cover-carousel-arrow{position:absolute;z-index:20;top:50%;transform:translateY(-50%);width:34px;height:44px;border:0;border-radius:50%;background:#f8f6f0d9;color:#253d6e;font-size:30px;cursor:pointer}
+.cover-carousel-arrow.prev{left:0}.cover-carousel-arrow.next{right:0}
+.cover-carousel-caption{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;color:#253d6e;text-align:center;margin-top:6px}
+.cover-carousel-caption strong{font-size:15px;letter-spacing:.11em}
+.cover-carousel-caption span{font-size:10px;letter-spacing:.13em}
+.cover-carousel-dots{display:flex;justify-content:center;gap:9px;margin:15px 0 22px}
+.cover-carousel-dots button{border:0;border-radius:50%;width:7px;height:7px;background:#c6cbd0;padding:0;cursor:pointer}
+.cover-carousel-dots button.active{background:#ed879d;transform:scale(1.3)}
+@media(prefers-reduced-motion:reduce){.cover-carousel-card{transition:none}}
