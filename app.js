@@ -238,16 +238,42 @@ function queueCloudSave(){if(!cloudEnabled||!accountUser)return;for(let p of s.p
 async function initAccount(){try{let {user}=await api('/me');if(user){accountUser=user;await loadCloudProjects(false)}else{cloudEnabled=false;updateAccountButton()}}catch{cloudEnabled=false;updateAccountButton()}}
 initializeStorage();
 
-// Optional transparent cutout: computed locally in the browser, never uploaded.
-let folioCutoutCache=new Map();
+// Transparent cutouts are generated on the client and cached only in memory.
+// The full product photo remains untouched; failures are shown to the user.
+const folioCutoutCache=new Map();
+let folioCutoutModulePromise;
 async function prepareFolioCutouts(){
- const img=document.querySelector('.folio-auto-cutout');if(!img)return;
- const src=img.getAttribute('src');
- if(folioCutoutCache.has(src)){img.src=folioCutoutCache.get(src);return;}
+ const img=document.querySelector('.folio-auto-cutout');
+ if(!img)return;
+ const source=img.getAttribute('src');
+ if(!source)return;
+ if(folioCutoutCache.has(source)){img.src=folioCutoutCache.get(source);return;}
+ const holder=img.closest('.folio-cutout');
+ if(holder)holder.classList.add('cutout-loading');
  try{
-  const mod=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm');
-  const blob=await mod.removeBackground(src,{model:'isnet_fp16',output:{format:'image/png'}});
-  const url=URL.createObjectURL(blob);folioCutoutCache.set(src,url);
-  if(img.isConnected&&img.getAttribute('src')===src)img.src=url;
- }catch(err){console.warn('FOLIO cutout unavailable; showing original photo.',err)}
+  if(!folioCutoutModulePromise){
+   folioCutoutModulePromise=import('https://esm.sh/@imgly/background-removal@1.7.0?bundle');
+  }
+  const module=await folioCutoutModulePromise;
+  const removeBackground=module.removeBackground||module.default?.removeBackground||module.default;
+  if(typeof removeBackground!=='function')throw new Error('Background removal library unavailable');
+  const sourceBlob=await fetch(source).then(response=>{
+   if(!response.ok)throw new Error('Photo unavailable');
+   return response.blob();
+  });
+  const result=await removeBackground(sourceBlob,{
+   publicPath:'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/dist/',
+   model:'isnet_quint8',
+   output:{format:'image/png'}
+  });
+  const cutoutURL=URL.createObjectURL(result);
+  folioCutoutCache.set(source,cutoutURL);
+  if(img.isConnected&&img.getAttribute('src')===source)img.src=cutoutURL;
+ }catch(error){
+  console.error('FOLIO background removal failed:',error);
+  if(holder&&holder.isConnected){
+   holder.classList.add('cutout-failed');
+   holder.title='背景透過を読み込めませんでした。ネットワーク環境を確認してください。';
+  }
+ }finally{if(holder&&holder.isConnected)holder.classList.remove('cutout-loading')}
 }
