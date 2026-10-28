@@ -336,3 +336,12 @@ body.dialog-open{overflow:hidden}
 .folio-editorial-v2 .folio-recipe-step b{display:block;margin:0 0 2px}
 .folio-editorial-v2 .folio-step-note{display:block}
 @media(max-width:600px){.folio-editorial-v2 .folio-materials{height:39%;flex-basis:39%}.folio-editorial-v2 .folio-materials>.recipe-heading,.folio-editorial-v2 .folio-recipe-heading .recipe-heading{font-size:clamp(12px,3vw,17px)}.folio-editorial-v2 .folio-material-copy{font-size:7px}.folio-editorial-v2 .folio-material-copy p{padding-bottom:2px;margin-bottom:2px;gap:3px}.folio-editorial-v2 .folio-recipe-heading{padding-top:5px;margin-bottom:4px}.folio-editorial-v2 .recipe-rows{font-size:7px}.folio-editorial-v2 .folio-recipe-step{grid-template-columns:19px 1fr;gap:4px;padding:3px 0}.folio-editorial-v2 .folio-step-no{font-size:10px}}
+
+/* Project selection: select all / clear all */
+.choose-selection-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:8px 0 18px}
+.choose-selection-head .muted{margin:0}
+.choose-all-btn{appearance:none;border:1px solid #dce8e9;background:#f4bdc8;color:#23435a;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;letter-spacing:.04em;padding:11px 19px;cursor:pointer;transition:filter .2s}
+.choose-all-btn:hover{filter:brightness(.96)}
+.choose-all-btn:focus-visible{outline:3px solid #253d6e;outline-offset:3px}
+.folio-editorial-v2 .folio-cutout .folio-auto-cutout{object-fit:contain;mix-blend-mode:normal}
+@media(max-width:470px){.choose-selection-head{gap:8px}.choose-all-btn{font-size:12px;padding:9px 12px}}
