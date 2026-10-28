@@ -321,3 +321,18 @@ body.dialog-open{overflow:hidden}
 .folio-editorial-v2 .recipe-rows p{break-inside:avoid;margin:0 0 9px}
 .folio-editorial-v2 .recipe-rows b{display:block;font-weight:700;margin-bottom:2px}
 @media(max-width:600px){.folio-editorial-v2 .folio-materials{min-height:35%}.folio-editorial-v2 .folio-recipe-heading{margin-bottom:5px}.folio-editorial-v2 .folio-recipe-heading .recipe-heading{font-size:clamp(12px,3vw,19px)}.folio-editorial-v2 .recipe-rows{font-size:7px;column-gap:6px;line-height:1.3}.folio-editorial-v2 .recipe-rows p{margin-bottom:4px}}
+
+/* v42 — magazine spread: compact materials, spacious recipe */
+.folio-editorial-v2 .folio-materials{height:39%;min-height:0;flex:0 0 39%;padding-bottom:8px}
+.folio-editorial-v2 .folio-recipe{flex:1;min-height:0;overflow:hidden;padding-top:8px;border-top:0}
+.folio-editorial-v2 .folio-materials>.recipe-heading,.folio-editorial-v2 .folio-recipe-heading .recipe-heading{font-family:'Abril Fatface',Georgia,serif;font-size:clamp(16px,2.2vw,29px);line-height:1.1;letter-spacing:-.03em}
+.folio-editorial-v2 .folio-material-copy{width:64%;font-size:clamp(9px,1.15vw,13px)}
+.folio-editorial-v2 .folio-material-copy p{display:grid;grid-template-columns:42% 1fr;gap:6px;border-bottom:1px dotted #ccd5e2;padding-bottom:7px;margin-bottom:7px}
+.folio-editorial-v2 .folio-cutout{right:0;top:25%;width:34%;height:64%;mix-blend-mode:normal}
+.folio-editorial-v2 .folio-recipe-heading{border-top:1px solid #253d6e;padding-top:12px;margin-bottom:12px}
+.folio-editorial-v2 .recipe-rows{columns:1;column-rule:none;display:block;font-size:clamp(9px,1.15vw,13px);line-height:1.45}
+.folio-editorial-v2 .folio-recipe-step{display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px dotted #c7d3e1;break-inside:avoid}
+.folio-editorial-v2 .folio-step-no{font-family:'Playfair Display',Georgia,serif;font-size:clamp(14px,1.8vw,23px);font-weight:700;line-height:1.1;border-right:1px dotted #c7d3e1}
+.folio-editorial-v2 .folio-recipe-step b{display:block;margin:0 0 2px}
+.folio-editorial-v2 .folio-step-note{display:block}
+@media(max-width:600px){.folio-editorial-v2 .folio-materials{height:39%;flex-basis:39%}.folio-editorial-v2 .folio-materials>.recipe-heading,.folio-editorial-v2 .folio-recipe-heading .recipe-heading{font-size:clamp(12px,3vw,17px)}.folio-editorial-v2 .folio-material-copy{font-size:7px}.folio-editorial-v2 .folio-material-copy p{padding-bottom:2px;margin-bottom:2px;gap:3px}.folio-editorial-v2 .folio-recipe-heading{padding-top:5px;margin-bottom:4px}.folio-editorial-v2 .recipe-rows{font-size:7px}.folio-editorial-v2 .folio-recipe-step{grid-template-columns:19px 1fr;gap:4px;padding:3px 0}.folio-editorial-v2 .folio-step-no{font-size:10px}}
