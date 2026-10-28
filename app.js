@@ -59,7 +59,52 @@ function current(){return s.projects.find(p=>p.id===s.active)}
 function go(v){if(['new','record','book','choose','preview'].includes(v)&&!accountUser){openAccount();accountNotice(at('loginNeeded'));return;}clearInterval(carouselTimer);s.view=v;save();render();window.scrollTo(0,0)}
 function header(){document.documentElement.lang=s.lang;$('lang').value=s.lang;let nav=$('nav');nav.innerHTML=[['home','⌂'],['studio','▦']].map(([v,ic])=>`<button class="${s.view===v||(v==='home'&&['new','record'].includes(s.view))||(v==='studio'&&['book','choose','preview'].includes(s.view))?'active':''}" onclick="go('${v}')"><span>${ic}</span>${t(v)}</button>`).join('')}
 function ad(){return `<div class="ad">${t('ad')}</div>`}
-function tile(p){return `<article class="card" onclick="openProject('${p.id}')"><div class="thumb">${p.photo?`<img src="${p.photo}" alt="">`:'✳'}</div><h4>${e(p.name)}</h4><p>${p.rows.length} ROWS · ${p.finished?'完成':'制作中'}</p></article>`}
+function tile(p){return `<article class="card archive-project-card" onclick="openProject('${p.id}')"><div class="archive-card-actions" onclick="event.stopPropagation()"><button type="button" class="archive-more" aria-label="${e(p.name)}のメニュー" aria-haspopup="true" aria-expanded="false" onclick="toggleArchiveMenu(event,'${p.id}')">•••</button><div class="archive-action-menu" id="archive-menu-${p.id}" hidden><button type="button" onclick="duplicateArchiveProject('${p.id}')">複製</button><button type="button" class="danger" onclick="askDeleteArchiveProject('${p.id}')">削除</button></div></div><div class="thumb">${p.photo?`<img src="${p.photo}" alt="">`:'✳'}</div><h4>${e(p.name)}</h4><p>${p.rows.length} ROWS · ${p.finished?'完成':'制作中'}</p></article>`}
+function closeArchiveMenus(){document.querySelectorAll('.archive-action-menu').forEach(el=>el.hidden=true);document.querySelectorAll('.archive-more').forEach(el=>el.setAttribute('aria-expanded','false'))}
+function toggleArchiveMenu(ev,id){ev.stopPropagation();const menu=document.getElementById('archive-menu-'+id);if(!menu)return;const opening=menu.hidden;closeArchiveMenus();menu.hidden=!opening;ev.currentTarget.setAttribute('aria-expanded',String(opening))}
+document.addEventListener('click',ev=>{if(!ev.target.closest('.archive-card-actions'))closeArchiveMenus()});
+async function duplicateArchiveProject(id){
+ const source=s.projects.find(p=>p.id===id);if(!source)return;
+ closeArchiveMenus();
+ const newId=crypto.randomUUID(),copy=structuredClone(source);
+ copy.id=newId;copy.name=source.name+'（コピー）';
+ copy.photo=null;copy.recipePhoto=null;
+ try{
+  for(const [key,property] of [[photoKey(id),'photo'],[recipePhotoKey(id),'recipePhoto']]){
+   const blob=await idbGet('photos',key);
+   if(blob){await storePhoto(property==='photo'?photoKey(newId):recipePhotoKey(newId),blob);copy[property]=URL.createObjectURL(blob)}
+  }
+  if(cloudEnabled&&accountUser){
+   await api('/projects',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({project:{...copy,photo:null,recipePhoto:null}})});
+  }
+  const index=s.projects.findIndex(p=>p.id===id);s.projects.splice(index+1,0,copy);save();render();
+ }catch(err){alert('複製できませんでした: '+err.message)}
+}
+let archiveDeleteId=null;
+function askDeleteArchiveProject(id){
+ const project=s.projects.find(p=>p.id===id);if(!project)return;
+ closeArchiveMenus();archiveDeleteId=id;
+ const dialog=document.getElementById('archive-delete-dialog');
+ document.getElementById('archive-delete-name').textContent=project.name;
+ dialog.hidden=false;
+ document.getElementById('archive-delete-no').focus();
+}
+function cancelDeleteArchiveProject(){archiveDeleteId=null;document.getElementById('archive-delete-dialog').hidden=true}
+async function confirmDeleteArchiveProject(){
+ const id=archiveDeleteId;if(!id)return;
+ const yes=document.getElementById('archive-delete-yes');yes.disabled=true;yes.textContent='削除中…';
+ try{
+  clearTimeout(cloudTimers.get(id));cloudTimers.delete(id);
+  if(cloudEnabled&&accountUser)await api('/projects?id='+encodeURIComponent(id),{method:'DELETE'});
+  s.projects=s.projects.filter(p=>p.id!==id);s.selected=s.selected.filter(x=>x!==id);
+  if(s.active===id)s.active=null;
+  for(const key of [photoKey(id),recipePhotoKey(id)]){try{await idbRemove('photos',key)}catch(err){console.warn('Photo cleanup:',err)}}
+  cancelDeleteArchiveProject();save();render();
+ }catch(err){alert('削除できませんでした: '+err.message)}
+ finally{yes.disabled=false;yes.textContent='はい、削除する'}
+}
+async function idbRemove(store,key){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).delete(key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error)})}
+
 function templateArt(type){
  const start='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 540"><rect width="480" height="540" fill="#d4dcd5"/>';
  const end='<text x="24" y="505" font-family="Georgia,serif" font-size="19" letter-spacing="3" fill="#355a6c">FOLIO. / CROCHET</text></svg>';
