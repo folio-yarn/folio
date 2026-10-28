@@ -120,11 +120,13 @@ export async function onRequest({request,env,params}){
   let user=await getUser(request,env);if(!user)return json({error:'ログインしてください'},401);
   if(route.startsWith('/photos/')&&['GET','PUT','DELETE'].includes(request.method)){
    if(!env.PHOTOS)return json({error:'写真ストレージが未設定です'},503);
-   const id=route.slice('/photos/'.length);
+   const requested=route.slice('/photos/'.length);
+   const isRecipe=requested.endsWith('/recipe');
+   const id=isRecipe?requested.slice(0,-7):requested;
    if(!/^[a-zA-Z0-9_-]{1,100}$/.test(id))return json({error:'Invalid photo id'},400);
    const project=await env.DB.prepare('SELECT id FROM projects WHERE user_id=? AND id=?').bind(user.id,id).first();
    if(!project)return json({error:'作品が見つかりません'},404);
-   const key='users/'+user.id+'/projects/'+id+'/photo';
+   const key='users/'+user.id+'/projects/'+id+'/'+(isRecipe?'recipe':'photo');
    if(request.method==='GET'){
     const obj=await env.PHOTOS.get(key);
     if(!obj)return json({error:'写真が見つかりません'},404);
