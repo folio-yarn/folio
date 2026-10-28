@@ -150,29 +150,44 @@ function addRow(){let p=current(),f=new FormData($('rowform'));p.rows.push({coun
 function undo(){let p=current();if(p.rows.length){p.rows.pop();save();render()}}
 function removeRow(i){current().rows.splice(i,1);save();render()}
 function setEdition(n){s.edition=n;s.selected=s.selected.slice(0,n);save();render()}
-let coverRenderTimer=null;
+function coverTransform(offset){
+ const square=offset*offset;
+ return 'translate(-50%,-50%) translateX('+(offset*55)+'%) translateZ('+(-square*55)+'px) rotateY('+(offset*-13)+'deg) scale('+Math.max(.65,1-.11*square)+')';
+}
 function setDesign(v){
- if(!coverChoices.some(x=>x[0]===v))return;
- s.design=v;save();
- const track=document.getElementById('cover-carousel-track');
- if(!track){render();return}
  const active=coverChoices.findIndex(x=>x[0]===v);
+ if(active<0)return;
+ const track=document.getElementById('cover-carousel-track');
+ const previous=coverChoices.findIndex(x=>x[0]===s.design);
+ s.design=v;save();
+ if(!track){render();return}
  track.querySelectorAll('.cover-carousel-card').forEach((card,i)=>{
   const offset=i-active, square=offset*offset;
-  card.style.setProperty('--shift',offset*55+'%');
-  card.style.setProperty('--depth',-square*55+'px');
-  card.style.setProperty('--tilt',offset*-13+'deg');
-  card.style.setProperty('--scale',Math.max(.65,1-.11*square));
-  card.style.setProperty('--fade',Math.max(.2,1-.23*square));
-  card.style.zIndex=10-square;
+  const start=card.getBoundingClientRect();
+  card.getAnimations().forEach(animation=>animation.cancel());
+  const oldTransform=getComputedStyle(card).transform;
+  const oldOpacity=getComputedStyle(card).opacity;
+  const nextTransform=coverTransform(offset);
+  card.style.transition='none';
+  card.style.transform=nextTransform;
+  card.style.opacity=String(Math.max(.2,1-.23*square));
   card.classList.toggle('is-active',i===active);
   card.setAttribute('aria-pressed',String(i===active));
+  const duration=850;
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches&&card.animate){
+   const animation=card.animate([
+    {transform:oldTransform,opacity:oldOpacity,offset:0},
+    {transform:nextTransform,opacity:String(Math.max(.2,1-.23*square)),offset:1}
+   ],{duration,easing:'cubic-bezier(.16,1,.3,1)'});
+   animation.onfinish=()=>{if(card.getAnimations().includes(animation))animation.cancel()};
+  }
+  card.style.zIndex=String(10-square);
  });
  const caption=document.querySelector('.cover-carousel-caption');
  if(caption)caption.innerHTML='<strong>'+coverChoices[active][2]+'</strong><span>SWIPE TO EXPLORE · '+(active+1)+' / '+coverChoices.length+'</span>';
  document.querySelectorAll('.cover-carousel-dots button').forEach((dot,i)=>dot.classList.toggle('active',i===active));
- clearTimeout(coverRenderTimer);
- coverRenderTimer=setTimeout(()=>{if(s.view==='book')render()},900);
+ const upload=document.querySelector('.cover-photo-upload');
+ if(upload)upload.hidden=!['white','blue'].includes(v);
 }
 function selectAllProjects(){const available=s.projects.slice(0,s.edition).map(p=>p.id);const all=available.length===s.selected.length&&available.every(id=>s.selected.includes(id));s.selected=all?[]:available;save();render()}
 function toggle(id,on){if(on&&s.selected.length>=s.edition){alert(`${s.edition} max`);render();return}s.selected=on?[...s.selected,id]:s.selected.filter(x=>x!==id);save();render()}
