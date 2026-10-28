@@ -404,10 +404,3 @@ body.dialog-open{overflow:hidden}
 .cover-photo-upload[hidden]{display:none!important}
 .cover-carousel-card{transition:none;transform-style:preserve-3d}
 
-/* Always show all six cover options; carousel retains its fluid motion. */
-.cover-design-shortcuts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin:4px 0 24px}
-.cover-design-shortcut{padding:5px 3px 7px;border:1px solid transparent;background:transparent;cursor:pointer;min-width:0;border-radius:5px;color:#253d6e}
-.cover-design-shortcut img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;box-shadow:0 3px 9px #1b2b3930}
-.cover-design-shortcut span{display:block;margin-top:5px;font-size:8px;line-height:1.3;letter-spacing:.02em;overflow-wrap:anywhere}
-.cover-design-shortcut.active{border-color:#ed879d;background:#fff4f6}
-@media(max-width:440px){.cover-design-shortcuts{gap:3px}.cover-design-shortcut span{font-size:7px}}
