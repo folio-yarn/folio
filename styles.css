@@ -362,3 +362,25 @@ body.dialog-open{overflow:hidden}
 .recipe-upload-button input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
 .recipe-remove-button{border:0;background:transparent;color:#38576a;text-decoration:underline;cursor:pointer}
 @media(max-width:470px){.recipe-upload-section{padding:15px}.recipe-upload-item{gap:8px}.recipe-upload-item>span{flex-basis:100%}}
+
+/* v46 — full-width magazine preview above compact recipe photo upload rows */
+.recipe-upload-section{padding:clamp(16px,3vw,38px);margin-top:34px}
+.recipe-upload-intro h3{margin-bottom:8px}
+.recipe-upload-intro p{max-width:760px}
+.recipe-sample-wrap{margin:20px auto 26px;max-width:1080px}
+.recipe-sample-title{display:flex;justify-content:space-between;gap:10px;color:#253d6e;font:700 12px/1.4 'DM Sans',sans-serif;letter-spacing:.09em;margin:0 auto 8px;max-width:920px}
+.recipe-sample-title span{font-weight:500;letter-spacing:0}
+.recipe-sample-wrap .book-stage.open-book{margin:0 auto;width:min(100%,920px)}
+.recipe-upload-heading{margin:28px 0 13px}
+.recipe-upload-heading h4{font-size:19px;margin:0 0 4px;color:#253d6e}
+.recipe-upload-heading p{font-size:13px;margin:0}
+.recipe-upload-item{min-height:64px;padding:8px 12px;gap:12px}
+.recipe-upload-item.active{outline:2px solid #aecbd4;outline-offset:-2px}
+.recipe-preview-pick{appearance:none;border:0;background:transparent;display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-align:left;color:#25455b;font-weight:700;cursor:pointer}
+.recipe-item-thumb{width:46px;height:46px;flex:0 0 46px;background:#eae7e0;display:grid;place-items:center;color:#9b9b9b;font-size:24px}
+.recipe-item-thumb img{width:100%;height:100%;object-fit:cover}
+.recipe-image-thumb{width:44px;height:44px;flex:0 0 44px;display:grid;place-items:center;background:#f2f7f7;border:1px dashed #b9d0d5;color:#7c9cac}
+.recipe-image-thumb img{width:100%;height:100%;object-fit:contain}
+.recipe-upload-button{min-width:118px;text-align:center}
+.recipe-local-note{margin-top:13px!important}
+@media(max-width:470px){.recipe-upload-item{gap:7px}.recipe-item-thumb{width:36px;height:36px;flex-basis:36px}.recipe-image-thumb{width:34px;height:34px;flex-basis:34px}.recipe-upload-button{min-width:95px;font-size:10px;padding:10px 7px}.recipe-preview-pick{gap:6px}.recipe-sample-title{font-size:9px}}
