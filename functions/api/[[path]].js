@@ -155,6 +155,12 @@ export async function onRequest({request,env,params}){
    if(!p||typeof p.id!=='string'||p.id.length>100||typeof p.name!=='string'||p.name.length>100||!Array.isArray(p.rows)||p.rows.length>5000)return json({error:'作品データが不正です'},400);
    await env.DB.prepare('INSERT INTO projects(user_id,id,data,updated_at) VALUES(?,?,?,?) ON CONFLICT(user_id,id) DO UPDATE SET data=excluded.data,updated_at=excluded.updated_at').bind(user.id,p.id,JSON.stringify(p),Date.now()).run();return json({ok:true});
   }
+  if(route==='/projects'&&request.method==='DELETE'){
+   const id=url.searchParams.get('id');
+   if(!id||id.length>100)return json({error:'作品IDが不正です'},400);
+   await env.DB.prepare('DELETE FROM projects WHERE user_id=? AND id=?').bind(user.id,id).run();
+   return json({ok:true});
+  }
   return json({error:'Not found'},404);
  }catch(err){console.error('FOLIO API failure', {route: new URL(request.url).pathname, name: String(err?.name||'Error'), message: String(err?.message||'Unknown error').slice(0,400)});return json({error:'サーバーエラーが発生しました'},500)}
 }
