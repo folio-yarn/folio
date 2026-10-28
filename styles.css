@@ -404,3 +404,22 @@ body.dialog-open{overflow:hidden}
 .cover-photo-upload[hidden]{display:none!important}
 .cover-carousel-card{transition:none;transform-style:preserve-3d}
 
+
+/* Archive card action menu */
+.archive-project-card{position:relative}
+.archive-card-actions{position:absolute;right:12px;top:12px;z-index:8}
+.archive-more{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:50%;background:#fffef1ed;color:#253d6e;font-weight:900;font-size:15px;letter-spacing:1px;cursor:pointer;box-shadow:0 2px 8px #1b2b3925}
+.archive-action-menu{position:absolute;top:42px;right:0;min-width:126px;padding:5px;background:#fff;border:1px solid #d9e1e3;box-shadow:0 9px 24px #1b2b3930;z-index:15;border-radius:6px}
+.archive-action-menu[hidden],.archive-dialog-backdrop[hidden]{display:none!important}
+.archive-action-menu button{display:block;width:100%;border:0;background:transparent;color:#253d6e;text-align:left;padding:10px 12px;cursor:pointer;font-size:13px}
+.archive-action-menu button:hover{background:#f2f6f7}
+.archive-action-menu button.danger{color:#ad4353}
+.archive-dialog-backdrop{position:fixed;inset:0;z-index:10000;background:#142943a6;display:flex;align-items:center;justify-content:center;padding:20px}
+.archive-dialog{width:min(100%,420px);background:#f8f7f1;padding:30px 26px;box-shadow:0 22px 60px #101c3440;color:#253d6e}
+.archive-dialog-kicker{font-size:10px;letter-spacing:.18em;color:#b45a70;font-weight:700}
+.archive-dialog h2{font-size:23px;margin:14px 0}
+.archive-dialog p{font-size:14px;line-height:1.8;margin-bottom:25px;overflow-wrap:anywhere}
+.archive-dialog-buttons{display:flex;gap:10px}
+.archive-dialog-buttons button{flex:1;min-height:44px;border:1px solid #9eb3bd;background:transparent;color:#253d6e;cursor:pointer;font-weight:700}
+.archive-dialog-buttons #archive-delete-yes{border-color:#ad4353;background:#ad4353;color:white}
+.archive-dialog-buttons button:disabled{opacity:.6;cursor:wait}
