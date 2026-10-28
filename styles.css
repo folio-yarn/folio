@@ -349,3 +349,16 @@ body.dialog-open{overflow:hidden}
 /* Cutout loading / failure indicator, without changing the original photo. */
 .folio-editorial-v2 .folio-cutout.cutout-loading:after{content:'背景を処理中…';position:absolute;inset:auto 0 0;background:#ffffffdf;color:#253d6e;font:600 10px/1.4 'DM Sans',sans-serif;text-align:center;padding:5px 2px}
 .folio-editorial-v2 .folio-cutout.cutout-failed:after{content:'背景透過を利用できません';position:absolute;inset:auto 0 0;background:#ffffffeb;color:#253d6e;font:600 9px/1.4 'DM Sans',sans-serif;text-align:center;padding:5px 2px}
+
+/* Optional recipe-page image uploads, one per selected project */
+.recipe-upload-section{margin:32px 0;padding:24px;background:#edf3f2;border:1px solid #d0dfe0;color:#25455b}
+.recipe-upload-section h3{font-family:'Abril Fatface',Georgia,serif;font-size:clamp(22px,3vw,32px);color:#253d6e;margin:0 0 9px}
+.recipe-upload-section>p{font-size:13px;line-height:1.7;margin:0 0 15px}
+.recipe-upload-list{display:grid;gap:10px}
+.recipe-upload-item{display:flex;align-items:center;gap:13px;min-height:62px;padding:10px 13px;background:#fff;flex-wrap:wrap}
+.recipe-upload-item>span{flex:1;min-width:100px;font-size:14px;font-weight:700}
+.recipe-upload-item>img{width:55px;height:55px;object-fit:contain;background:repeating-conic-gradient(#e7e7e7 0% 25%,#fff 0% 50%) 50%/12px 12px}
+.recipe-upload-button{background:#f4bdc8;color:#23435a;padding:10px 14px;cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap}
+.recipe-upload-button input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.recipe-remove-button{border:0;background:transparent;color:#38576a;text-decoration:underline;cursor:pointer}
+@media(max-width:470px){.recipe-upload-section{padding:15px}.recipe-upload-item{gap:8px}.recipe-upload-item>span{flex-basis:100%}}
