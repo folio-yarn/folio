@@ -338,5 +338,25 @@ async function loadCloudProjects(afterLogin=false){try{let result=await api('/pr
 async function logoutAccount(){if(!confirm('ログアウトしますか？ この端末にはログイン中の作品を残しません。'))return;try{await api('/auth/logout',{method:'POST',headers:{'content-type':'application/json'},body:'{}'})}catch{}accountUser=null;cloudEnabled=false;cloudTimers.forEach(clearTimeout);cloudTimers.clear();s.projects=[];s.active=null;s.selected=[];s.coverPhoto=null;save();closeAccount();go('home')}
 function queueCloudSave(){if(!cloudEnabled||!accountUser)return;for(let p of s.projects){clearTimeout(cloudTimers.get(p.id));let snapshot=structuredClone(p);snapshot.photo=null;snapshot.recipePhoto=null; cloudTimers.set(p.id,setTimeout(async()=>{try{await api('/projects',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({project:snapshot})});let st=$('save-state');if(st)st.textContent='✓ クラウドに保存済み'}catch(err){let st=$('save-state');if(st)st.textContent='⚠ クラウド保存に失敗（この端末には保存済み）';console.error('FOLIO cloud save:',err)}},550))}}
 async function initAccount(){try{let {user}=await api('/me');if(user){accountUser=user;await loadCloudProjects(false)}else{cloudEnabled=false;updateAccountButton()}}catch{cloudEnabled=false;updateAccountButton()}}
+// Bump this ID and edit the message when publishing a user-facing update.
+// First-time visitors do not see a historical update announcement.
+const SITE_UPDATE={id:'2026-10-29-notice-ready',message:'Webサイトの一部をアップデートしました。'};
+function dismissUpdateNotice(){
+ const notice=document.getElementById('update-notice');
+ if(notice)notice.hidden=true;
+ try{localStorage.setItem('folio-last-seen-update',SITE_UPDATE.id)}catch{}
+}
+function initUpdateNotice(){
+ const notice=document.getElementById('update-notice');
+ if(!notice)return;
+ try{
+  const key='folio-last-seen-update',last=localStorage.getItem(key);
+  if(!last){localStorage.setItem(key,SITE_UPDATE.id);return}
+  if(last===SITE_UPDATE.id)return;
+  document.getElementById('update-notice-text').textContent=SITE_UPDATE.message;
+  notice.hidden=false;
+ }catch{/* Private browsing/storage restrictions should not block the app. */}
+}
+initUpdateNotice();
 initializeStorage();
 
