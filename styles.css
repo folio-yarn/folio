@@ -285,3 +285,28 @@ body.dialog-open{overflow:hidden}
    A spread is 920px wide, so each 4:5 page is 460px wide. */
 .book-stage.single-book .single-page{width:50%;max-width:none;flex:0 0 50%;aspect-ratio:4/5}
 @media(max-width:600px){.book-stage.single-book .single-page{width:50%;flex-basis:50%}}
+
+/* FOLIO. editorial recipe book — reference-inspired redesign */
+.open-book .folio-editorial-v2{color:#253d6e;background:#fff}
+.open-book .folio-editorial-v2>.spread-left,.open-book .folio-editorial-v2>.spread-right{padding:clamp(10px,2.2vw,24px);background:#fff;background-image:none;color:#253d6e;display:flex;flex-direction:column;overflow:hidden}
+.folio-editorial-v2 .product-heading,.folio-editorial-v2 .recipe-heading{font-family:'Abril Fatface','Playfair Display',Georgia,serif;font-weight:400;color:#253d6e;letter-spacing:-.045em;line-height:1.03;margin:0}
+.folio-editorial-v2 .product-heading{font-size:clamp(19px,4.2vw,54px);white-space:nowrap;letter-spacing:-.065em;z-index:1}
+.folio-editorial-v2 .product-photo{height:auto;flex:1;min-height:0;width:100%;margin:-1% auto 0;display:flex;align-items:center;justify-content:center;background:#fafaf8;overflow:hidden}
+.folio-editorial-v2 .product-photo .preview-photo{display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;filter:none}
+.folio-editorial-v2 .folio-page-footer{display:flex;justify-content:space-between;align-items:end;gap:8px;flex-shrink:0;padding-top:10px;font:600 clamp(9px,1.3vw,15px)/1.2 'DM Sans',sans-serif;letter-spacing:.06em}
+.folio-editorial-v2 .folio-page-footer span:last-child{font-size:clamp(7px,1vw,11px)}
+.folio-editorial-v2 .folio-materials{position:relative;min-height:43%;flex-shrink:0}
+.folio-editorial-v2 .recipe-heading{font-size:clamp(19px,3vw,39px);margin:0 0 13px}
+.folio-editorial-v2 .folio-material-copy{position:relative;z-index:1;width:66%;font-size:clamp(9px,1.35vw,15px);line-height:1.55;overflow-wrap:anywhere}
+.folio-editorial-v2 .folio-material-copy p{font-size:inherit;line-height:inherit;margin:0 0 9px}
+.folio-editorial-v2 .folio-material-copy b{display:block;font-weight:700}
+.folio-editorial-v2 .folio-cutout{position:absolute;right:0;top:18%;width:32%;height:60%;display:flex;align-items:center;justify-content:center;overflow:hidden;mix-blend-mode:multiply}
+.folio-editorial-v2 .folio-cutout .preview-photo{width:100%;height:100%;object-fit:contain;filter:none}
+.folio-editorial-v2 .folio-cutout .preview-placeholder{font-size:36px}
+.folio-editorial-v2 .folio-recipe{border-top:2px dotted #253d6e;padding-top:15px;flex:1;min-height:0;overflow:hidden}
+.folio-editorial-v2 .recipe-rows{margin:0;font-size:clamp(9px,1.25vw,14px);line-height:1.6;overflow-wrap:anywhere}
+.folio-editorial-v2 .recipe-rows p{font-size:inherit;line-height:inherit;margin:0 0 7px}
+.folio-editorial-v2 .folio-page-footer-right{border-top:2px solid #253d6e;margin-top:8px}
+.folio-editorial-v2 .folio-page-footer-right span:first-child{font-size:clamp(7px,.95vw,10px)}
+.folio-editorial-v2 .folio-page-footer-right span:last-child{font-size:clamp(9px,1.3vw,15px)}
+@media(max-width:600px){.open-book .folio-editorial-v2>.spread-left,.open-book .folio-editorial-v2>.spread-right{padding:8px}.folio-editorial-v2 .product-heading{font-size:clamp(15px,4.5vw,25px)}.folio-editorial-v2 .recipe-heading{font-size:clamp(15px,3.7vw,24px);margin-bottom:6px}.folio-editorial-v2 .folio-material-copy{font-size:8px}.folio-editorial-v2 .folio-material-copy p{margin-bottom:3px}.folio-editorial-v2 .recipe-rows{font-size:8px;line-height:1.35}.folio-editorial-v2 .recipe-rows p{margin-bottom:3px}.folio-editorial-v2 .folio-recipe{padding-top:7px}.folio-editorial-v2 .folio-page-footer{padding-top:5px}}
